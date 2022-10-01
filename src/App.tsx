@@ -1,33 +1,26 @@
 import UserList from "./components/UserList/UserList";
+import Form from "./components/form/UserForm";
+import { useState } from "react";
 
-const listOfUsers = [
-  {
-    name: "Max",
-    age: 25,
-  },
-  {
-    name: "Sam",
-    age: 26,
-  },
-  {
-    name: "John",
-    age: 27,
-  },
-  {
-    name: "Bill",
-    age: 28,
-  },
-  {
-    name: "Reggie",
-    age: 29,
-  },
-];
+const listOfUsers = [{}];
+
+
 
 const App = () => {
-  
+  const [userList, setUserList] = useState(listOfUsers)
+  const addUser = (newAdd: any) => {
+    if (newAdd) {
+      setUserList((prevList) => {
+        const updatedList = [...prevList];
+        updatedList.unshift(newAdd);
+        return updatedList
+      })
+    }
+  };
   return (
     <>
-      <UserList list={listOfUsers}/>
+      <Form addFunction={addUser} />
+      <UserList list={userList} />
     </>
   );
 }
