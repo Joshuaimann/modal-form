@@ -10,9 +10,11 @@ const ListWrap = styled.div`
 const UserList = (props: any) => {
   return (
     <ListWrap>
-      {props.list.map((info: any) => {
-          return <User name={info.name} age={info.age} key={ Math.random()} />;
-      })}
+        { (props.list.length > 1) && props.list.filter((item: any) => item.name).map((info: any) => {
+          return (
+            <User name={info.name} age={info.age} key={Math.random()} />
+          )
+        }) }
     </ListWrap>
   );
 };

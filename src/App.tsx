@@ -1,28 +1,33 @@
 import UserList from "./components/UserList/UserList";
-import Form from "./components/form/UserForm";
-import { useState } from "react";
+import UserForm from "./components/form/UserForm";
 
-const listOfUsers = [{}];
+import { useState } from "react";
 
 
 
 const App = () => {
-  const [userList, setUserList] = useState(listOfUsers)
+  const [userList, setUserList] = useState([{}]);
+
   const addUser = (newAdd: any) => {
     if (newAdd) {
-      setUserList((prevList) => {
-        const updatedList = [...prevList];
-        updatedList.unshift(newAdd);
-        return updatedList
-      })
+      if (userList.length == 0) {
+        setUserList(newAdd);
+      } else {
+        setUserList(() => {
+          const updatedList = [...userList];
+          updatedList.unshift(newAdd);
+          return updatedList;
+        });
+      }
     }
   };
+
   return (
     <>
-      <Form addFunction={addUser} />
+      <UserForm addFunction={addUser} />
       <UserList list={userList} />
     </>
   );
-}
+};
 
 export default App;

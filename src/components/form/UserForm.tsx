@@ -1,4 +1,8 @@
 import { Formik, Field, Form } from "formik";
+import { useState } from "react";
+import Modal from "@mui/material/Modal";
+import AgeAlert from "../alert/ageAlert";
+import NameAlert from "../alert/nameAlert";
 import styled from "styled-components";
 
 const Label = styled.label`
@@ -27,56 +31,100 @@ const SubmitButton = styled.button`
   box-shadow: 0px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 `;
 
+const Alert = styled.div`
+  position: absolute;
+  top: 30%;
+  left: 38%;
+  transform: "translate(-50%, -50%)";
+  width: 25%;
+`;
+
 interface formValues {
   name: string;
   age: number;
 }
 
 const UserForm = (props: any) => {
+  const [open, setOpen] = useState(false);
+
+  const popUpClose = () => {
+    handleClose();
+  };
+
+  const [theComponent, settingTheComponent] = useState(
+    <NameAlert whenClicked={popUpClose} />
+  );
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+
   return (
-    <Formik initialValues={{} as formValues} onSubmit={() => {}}>
-      {({ values, setFieldValue }) => (
-        <Form
-          onSubmit={(e) => {
-            e.preventDefault();
-            console.log(values);
-            const newValue = {
-              name: values.name,
-              age: values.age,
-            };
-            props.addFunction(newValue);
-          }}
-        >
-          <FormWrap>
-            <Label> Username </Label>
-            <Field
-              fullwidth="true"
-              variant="outlined"
-              value={values.name || ''}
-              name="name"
-              type="text"
-              onBlur={(e: any) => {
-                setFieldValue("name", e.target.value);
-              }}
-            />
+    <>
+      <Formik initialValues={{} as formValues} onSubmit={() => {}}>
+        {({ values, setFieldValue }) => (
+          <Form
+            onSubmit={(e) => {
+              e.preventDefault();
 
-            <Label> Age </Label>
-            <Field
-              fullwidth="true"
-              variant="outlined"
-              value={values.age || ''}
-              name="age"
-              type="number"
-              onBlur={(e: any) => {
-                setFieldValue("age", e.target.value);
-              }}
-            />
+              if ( !values.name || values.name.trim().length == 0 || !values.age) {
+                settingTheComponent(<NameAlert whenClicked={ popUpClose} />)
+                handleOpen()
+              } else if (+values.age < 0) {
+                settingTheComponent(<AgeAlert whenClicked={popUpClose} />);
+                handleOpen();
+              } else {
+                handleClose()
+                const newValue = {
+                  name: values.name,
+                  age: values.age,
+                };
+                props.addFunction(newValue);
+                setFieldValue("name", '');
+                setFieldValue("age", 0);
+              }
+            }}
+          >
+            <FormWrap>
+              <Label> Username </Label>
+              <Field
+                fullwidth="true"
+                variant="outlined"
+                value={values.name || ""}
+                name="name"
+                type="text"
+                onChange={(e: any) => {
+                  setFieldValue("name", e.target.value);
+                }}
+              />
 
-            <SubmitButton type="submit">Add User</SubmitButton>
-          </FormWrap>
-        </Form>
-      )}
-    </Formik>
+              <Label> Age </Label>
+              <Field
+                fullwidth="true"
+                variant="outlined"
+                value={values.age || ""}
+                name="age"
+                type="number"
+                onChange={(e: any) => {
+                  setFieldValue("age", e.target.value);
+                }}
+              />
+
+              <SubmitButton type="submit">Add User</SubmitButton>
+            </FormWrap>
+          </Form>
+        )}
+      </Formik>
+
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Alert>{theComponent}</Alert>
+      </Modal>
+    </>
   );
 };
 
